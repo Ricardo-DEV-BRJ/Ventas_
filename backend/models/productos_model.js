@@ -6,7 +6,7 @@ const { vacios } = require('../utils/validacion')
 class ProductosModels {
     todos() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT e.id_prod, p.nom_prod, c.id_cat, c.nom_cat, pr.id_prov, pr.nom_prov, SUM(e.cantidad) AS total_existencia, AVG(e.prec_uni) AS precio_promedio FROM existencia e INNER JOIN productos p ON e.id_prod = p.id_prod INNER JOIN categorias c ON p.id_cat = c.id_cat INNER JOIN proveedores pr ON p.id_prov = pr.id_prov WHERE p.hab_prod = ? GROUP BY e.id_prod, p.nom_prod, c.nom_cat;'
+            const query = 'SELECT e.id_prod, p.nom_prod, c.id_cat, c.nom_cat, pr.id_prov, pr.nom_prov, p.existencia AS total_existencia, AVG(e.prec_uni_bs) AS precio_bs, AVG(e.prec_uni_dolar) AS precio_dolar FROM existencia e INNER JOIN productos p ON e.id_prod = p.id_prod INNER JOIN categorias c ON p.id_cat = c.id_cat INNER JOIN proveedores pr ON p.id_prov = pr.id_prov WHERE p.hab_prod = 1 GROUP BY e.id_prod, p.nom_prod, c.nom_cat'
             connection.query(query, [1], function (error, result, field) {
                 if (error) {
                     return reject({ msj: 'Error al consutlar', error: error })

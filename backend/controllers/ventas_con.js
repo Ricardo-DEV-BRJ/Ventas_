@@ -36,9 +36,9 @@ class VentasController {
 
     }
 
-    modificar(venta) {
+    devolucion(venta) {
         return new Promise((resolve, reject) => {
-            VentasModels.modificar(venta)
+            VentasModels.devolucion(venta)
             .then((result) => {
                 resolve(result)
             }).catch((err) => {

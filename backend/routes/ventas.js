@@ -29,4 +29,13 @@ router.post('/pago', function (req, res, next) {
         });
 });
 
+router.post('/devolucion', function (req, res, next) {
+    VentasController.devolucion(req.body)
+        .then((result) => {
+            res.send(result)
+        }).catch((err) => {
+            res.send(err)
+        });
+});
+
 module.exports = router;
