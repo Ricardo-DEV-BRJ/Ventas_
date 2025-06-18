@@ -180,6 +180,9 @@ class VentasModels {
             if (!venta.id_ven) {
                 return reject({ msj: 'Datos de devolución incompletos' })
             }
+            if (venta.id_ven.trim() === '') {
+                return reject({ msj: 'Datos vacíos' })
+            }
             const fields_dev = ['id_dev', 'id_ven', 'num_fac', 'monto_bs', 'monto_dolar', 'prods']
             const query_dev = crear('devoluciones', fields_dev)
             const query_ven = eliminar('ventas', 'hab_ven', 'id_ven')
@@ -190,6 +193,7 @@ class VentasModels {
             const params_check = [venta.id_ven]
             const query_graf = 'DELETE FROM graf_prod WHERE id_ven = ?'
             const params_graf = venta.id_ven
+            const params_check_prod = 'SELECT * FROM productos WHERE id_prod = ?'
 
             connection.beginTransaction(async (error) => {
                 if (error) return reject({ msj: 'Error al consultar', error: error })
@@ -237,8 +241,13 @@ class VentasModels {
                 })
 
                 for (const producto of productos) {
-                    console.log(producto.id_prod)
-                    console.log(producto.cantidad)
+                    await new Promise((resolve, reject) => {
+                        connection.query(params_check_prod, [producto.id_prod], function (error, result) {
+                            if (error) return reject(error);
+                            else if (result.length === 0) return reject({ msj: 'Producto inexistente' })
+                            else resolve()
+                        })
+                    })
                     await new Promise((resolve, reject) => {
                         connection.query(query_cant, [producto.cantidad, producto.id_prod], function (error, result) {
                             if (error) return reject(error);
@@ -262,7 +271,138 @@ class VentasModels {
         })
     }
 
+
+    devolucion_uno(venta) {
+        return new Promise(async (resolve, reject) => {
+            const id_dev = uuidv4()
+            const field_obj = ['id_prod', 'nom_prod', 'cantidad', 'prec_uni_bs', 'prec_uni_dolar', 'monto_prod_bs', 'monto_prod_dolar']
+            const obj_empty = object_vacios(venta.prods, field_obj)
+            if (!obj_empty) {
+                return reject({ msj: 'Datos de producto vacíos' })
+            }
+            if (venta.id_ven.trim() === '') {
+                return reject({ msj: 'Datos vacíos' })
+            }
+            const fields_dev = ['id_dev', 'id_ven', 'num_fac', 'monto_bs', 'monto_dolar', 'prods']
+            const query_dev = crear('devoluciones', fields_dev)
+            const query_cant = 'UPDATE productos SET existencia = existencia + ? WHERE id_prod = ?'
+            const query_check = 'SELECT hab_ven FROM ventas WHERE id_ven = ?'
+            const query_prods = 'SELECT num_fac, monto_bs, monto_dolar, descrip FROM detalle_venta WHERE id_ven = ?'
+            const params_check = [venta.id_ven]
+            const query_graf = 'DELETE FROM graf_prod WHERE id_prod = ? AND id_ven = ?'
+            const params_check_prod = 'SELECT * FROM productos WHERE id_prod = ?'
+            const params_vent = 'UPDATE detalle_venta SET descrip = ? WHERE id_ven = ?'
+            const query_ven_finally = eliminar('ventas', 'hab_ven', 'id_ven')
+
+            connection.beginTransaction(async (error) => {
+                if (error) return reject({ msj: 'Error al consultar', error: error })
+            })
+            try {
+                await new Promise((resolve, reject) => {
+                    connection.query(query_check, params_check, function (error, result) {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (result[0].hab_ven === 0) {
+                            return reject({ msj: 'Devolucion no valida' })
+                        }
+                        resolve()
+                    })
+                })
+                const prods = await new Promise((resolve, reject) => {
+                    connection.query(query_prods, params_check, function (error, result) {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result)
+
+                    })
+                })
+                const prods_data = JSON.parse(prods[0].descrip)
+                const id_eliminar = []
+                for (let i = 0; i < venta.prods.length; i++) {
+                    id_eliminar.push(venta.prods[i].id_prod)
+                }
+                const productosFiltrados = prods_data.filter(producto =>
+                    !id_eliminar.includes(producto.id_prod)
+                );
+                const prod_data = []
+                if (productosFiltrados.length > 0) {
+                    prod_data = JSON.stringify(productosFiltrados)
+                }
+                
+                const prods_dev = JSON.stringify(venta.prods)
+                const params_dev = [id_dev, venta.id_ven, prods[0].num_fac, prods[0].monto_bs, prods[0].monto_dolar, prods_dev]
+                await new Promise((resolve, reject) => {
+                    connection.query(query_dev, params_dev, function (error) {
+                        if (error) return reject(error);
+                        else resolve()
+
+                    })
+                })
+
+                for (const producto of venta.prods) {
+                    await new Promise((resolve, reject) => {
+                        connection.query(params_check_prod, [producto.id_prod], function (error, result) {
+                            if (error) return reject(error);
+                            else if (result.length === 0) return reject({ msj: 'Producto inexistente' })
+                            else resolve()
+
+                        })
+                    })
+                    await new Promise((resolve, reject) => {
+                        connection.query(query_cant, [producto.cantidad, producto.id_prod], function (error, result) {
+                            if (error) return reject(error);
+                            else resolve()
+
+                        })
+                    })
+                    await new Promise((resolve, reject) => {
+                        connection.query(query_graf, [producto.id_prod, venta.id_ven], function (error) {
+                            if (error) return reject(error);
+                            else resolve()
+
+                        })
+                    })
+                }
+                if (productosFiltrados.length === 0) {
+                    await new Promise((resolve, reject) => {
+                        connection.query(query_ven_finally, [false, venta.id_ven], function (error) {
+                            if (error) return reject(error);
+                            else resolve()
+
+                        })
+                    })
+                } else {
+                    await new Promise((resolve, reject) => {
+                        connection.query(params_vent, [prod_data, venta.id_ven], function (error) {
+                            if (error) return reject(error);
+                            else resolve()
+
+                        })
+                    })
+                }
+
+                await new Promise((resolve, reject) => {
+                    connection.commit((err) => {
+                        if (err) reject(err);
+                        else resolve();
+
+                    });
+                });
+
+                resolve({ msj: 'Devolución realizada con éxito' });
+            } catch (error) {
+                connection.rollback(() => {
+                    reject(error);
+                });
+            }
+
+        })
+    }
+
 }
+
 
 
 module.exports = new VentasModels();

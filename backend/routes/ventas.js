@@ -37,5 +37,13 @@ router.post('/devolucion', function (req, res, next) {
             res.send(err)
         });
 });
+router.post('/devolucion_uno', function (req, res, next) {
+    VentasController.devolucion_uno(req.body)
+        .then((result) => {
+            res.send(result)
+        }).catch((err) => {
+            res.send(err)
+        });
+});
 
 module.exports = router;

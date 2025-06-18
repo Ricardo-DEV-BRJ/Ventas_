@@ -47,6 +47,17 @@ class VentasController {
         })
 
     }
+    devolucion_uno(venta) {
+        return new Promise((resolve, reject) => {
+            VentasModels.devolucion_uno(venta)
+            .then((result) => {
+                resolve(result)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+
+    }
 
     eliminar(venta) {
         return new Promise((resolve, reject) => {
