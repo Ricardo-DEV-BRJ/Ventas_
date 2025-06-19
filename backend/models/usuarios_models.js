@@ -7,7 +7,7 @@ require('dotenv').config()
 
 class UsuariosModels {
     registrar(usuario) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (!usuario.iden || !usuario.nom_usu || !usuario.ape_usu || !usuario.usuario || !usuario.clave || !usuario.id_rol) {
                 return reject({ msj: 'Datos incompletos' })
             }
@@ -32,28 +32,41 @@ class UsuariosModels {
     }
 
     login(usuario) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (!usuario.usuario || !usuario.clave) {
                 return reject({ msj: 'Datos incompletos' })
             }
-            const params = [usuario.usuario, usuario.clave]
+            const params = [usuario.usuario]
             const query = 'SELECT u.id_usu, u.nom_usu, u.ape_usu, u.usuario, r.nom_rol, u.clave, u.hab_usu FROM usuarios u INNER JOIN roles r ON u.id_rol = r.id_rol WHERE usuario = ?'
-            connection.query(query, params, function (error, result, field) {
-                if (error) {
-                    return reject({ msj: 'Error del servidor', error: error })
-                }
-                if (result.length === 0) {
-                    return reject({ msj: 'Usuario no encontrado' })
-                }
-                if (result[0].hab_usu === 0) {
-                    return reject({ msj: 'Usuario inactivo' })
-                }
-                const check = bcrypt.compare(usuario.clave, result[0].clave)
-                if (check) {
-                    const token = jwt.sign({ id_usu: result[0].id_usu, nom_usu: result[0].nom_usu, ape_usu: result[0].ape_usu, rol: result[0].nom_rol }, process.env.SECRET_JWT)
-                    resolve(token)
-                }
+            const data = await new Promise((resolve, reject) => {
+                connection.query(query, params, function (error, result, field) {
+                    if (error) {
+                        return reject({ msj: 'Error del servidor', error: error })
+                    }
+                    if (result.length === 0) {
+                        return reject({ msj: 'Usuario no encontrado' })
+                    }
+                    if (result[0].hab_usu === 0) {
+                        return reject({ msj: 'Usuario inactivo' })
+                    }
+                    resolve(result)
+                })
             })
+            const clave = data[0].clave
+            const passwordMatch = await bcrypt.compare(usuario.clave, clave);
+            console.log(clave)
+            console.log(usuario.clave)
+
+
+            resolve({ msj: 'Ingreso con exito', token: passwordMatch })
+
+            // if (!access) {
+            //     return reject({ msj: 'Contraseña incorrecta' })
+            // } else {
+            //     const token = jwt.sign({ id_usu: data[0].id_usu, nom_usu: data[0].nom_usu, ape_usu: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT)
+            //     resolve(token)
+            // }
+
         })
     }
 
@@ -158,22 +171,22 @@ class UsuariosModels {
             }
             const params = [false, usuario.id_usu]
             const query = 'UPDATE usuarios SET hab_usu = ? WHERE id_usu = ?'
-            connection.query(query, params, function(error, result, field){
+            connection.query(query, params, function (error, result, field) {
                 if (error) {
-                    return reject({msj:'Error al eliminar', error:error})
+                    return reject({ msj: 'Error al eliminar', error: error })
                 }
-                resolve({msj:'Eliminado con exito'})
+                resolve({ msj: 'Eliminado con exito' })
             })
         })
     }
 
-    roles(){
+    roles() {
         return new Promise((resolve, reject) => {
             const query = 'SELECT * FROM roles'
-            connection.query(query, function(error, result, field){
+            connection.query(query, function (error, result, field) {
                 if (error) {
-                    return reject({msj:'Error al consultar'})
-                } 
+                    return reject({ msj: 'Error al consultar' })
+                }
                 resolve(result)
             })
         })

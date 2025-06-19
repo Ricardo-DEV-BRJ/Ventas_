@@ -11,7 +11,15 @@ const categoriasRouter = require('./routes/categorias')
 const productosRouter = require('./routes/productos')
 const clientesRouter = require('./routes/clientes')
 const ventasRouter = require('./routes/ventas')
+var cors = require('cors')
 
+const corsEndpoint = process.env.CORS_PORT
+//const PORT = 3000;
+// view engine setup
+app.use(cors({
+  origin: [corsEndpoint],
+  methods: 'GET,POST,PUT,DELETE'
+}))
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
