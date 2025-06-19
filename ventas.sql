@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-06-2025 a las 19:29:15
+-- Tiempo de generación: 19-06-2025 a las 07:03:04
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -268,7 +268,7 @@ CREATE TABLE `usuarios` (
   `nom_usu` varchar(50) NOT NULL,
   `ape_usu` varchar(50) NOT NULL,
   `usuario` varchar(50) NOT NULL,
-  `clave` varchar(50) NOT NULL,
+  `clave` varchar(100) NOT NULL,
   `id_rol` varchar(50) NOT NULL,
   `hab_usu` tinyint(1) NOT NULL,
   `fec_usu` date NOT NULL
@@ -279,8 +279,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usu`, `iden`, `nom_usu`, `ape_usu`, `usuario`, `clave`, `id_rol`, `hab_usu`, `fec_usu`) VALUES
-('ca057cca-08ec-49a3-839b-eb800453a7fa', 'V-28445397', 'Ricardo1', 'Briceño', 'riki', '$2b$10$qO8q81AxnLZJwE80lDMtZOT.jTbh4yoF7Buvp1Rr4Nq', 'c9e85673-4eea-4239-98b3-d7cd97602727', 1, '2025-06-02'),
-('e58fbc4e-423a-4d41-a42c-0aa8074830c7', 'V-27899123', 'Ricardo1', 'Briceño', 'juan11', '$2b$10$2HMfBtb784XOpg1KHjXR7.OCWnd5qAFCm6V9WeAXhPn', 'c9e85673-4eea-4239-98b3-d7cd97602727', 1, '2025-06-02');
+('4e5f25f7-89ae-4939-b769-d2c07c68d3ae', '1234', 'admin', 'admin', 'admin', '$2b$10$u.GWdJla51wfw7L9uYlVNe6G0fRDX.fKCbJDiWTYk6mWLkREwWoES', 'a7586f7c-e1c6-423f-840f-6b8d4bf5e3d4', 1, '2025-06-19');
 
 -- --------------------------------------------------------
 

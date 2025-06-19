@@ -34,39 +34,39 @@ class UsuariosModels {
     login(usuario) {
         return new Promise(async (resolve, reject) => {
             if (!usuario.usuario || !usuario.clave) {
-                return reject({ msj: 'Datos incompletos' })
+                reject({ msj: 'Datos incompletos' })
             }
             const params = [usuario.usuario]
             const query = 'SELECT u.id_usu, u.nom_usu, u.ape_usu, u.usuario, r.nom_rol, u.clave, u.hab_usu FROM usuarios u INNER JOIN roles r ON u.id_rol = r.id_rol WHERE usuario = ?'
-            const data = await new Promise((resolve, reject) => {
-                connection.query(query, params, function (error, result, field) {
-                    if (error) {
-                        return reject({ msj: 'Error del servidor', error: error })
-                    }
-                    if (result.length === 0) {
-                        return reject({ msj: 'Usuario no encontrado' })
-                    }
-                    if (result[0].hab_usu === 0) {
-                        return reject({ msj: 'Usuario inactivo' })
-                    }
-                    resolve(result)
+            try {
+                const data = await new Promise((resolve, reject) => {
+                    connection.query(query, params, function (error, result) {
+                        if (error) {
+                            return reject({ msj: 'Error del servidor', error: error })
+                        }
+                        if (result.length == 0) {
+                            return reject({ msj: 'Usuario no encontrado' })
+                        }
+                        if (result[0].hab_usu === 0) {
+                            return reject({ msj: 'Usuario inactivo' })
+                        }
+                        console.log(result[0].hab_usu)
+                        resolve(result)
+                    })
+
                 })
-            })
-            const clave = data[0].clave
-            const passwordMatch = await bcrypt.compare(usuario.clave, clave);
-            console.log(clave)
-            console.log(usuario.clave)
-
-
-            resolve({ msj: 'Ingreso con exito', token: passwordMatch })
-
-            // if (!access) {
-            //     return reject({ msj: 'Contraseña incorrecta' })
-            // } else {
-            //     const token = jwt.sign({ id_usu: data[0].id_usu, nom_usu: data[0].nom_usu, ape_usu: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT)
-            //     resolve(token)
-            // }
-
+                const clave = data[0].clave
+                const passwordMatch = await bcrypt.compare(usuario.clave, clave);
+                let token;
+                if (!passwordMatch) {
+                   return reject({ msj: 'Contraseña incorrecta' })
+                } else {
+                    token = jwt.sign({ id_usu: data[0].id, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT)
+                }
+                resolve({ msj: 'Ingreso con exito', token: token })
+            } catch (error) {
+                reject(error)
+            }
         })
     }
 

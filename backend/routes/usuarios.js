@@ -42,7 +42,7 @@ router.post('/registrar', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   UsuariosController.login(req.body)
     .then((result) => {
-        res.status(200).send(result)
+        res.send(result)
     }).catch((err) => {
          res.send(err)
     });

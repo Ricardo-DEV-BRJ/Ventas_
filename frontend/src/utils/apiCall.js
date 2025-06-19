@@ -18,7 +18,7 @@ export async function apiCall(endpoint, method = 'GET', data = null) {
     }
 
     const response = await axios(config)
-    return response // Retornar solo los datos en JSON
+    return response.data // Retornar solo los datos en JSON
   } catch (error) {
     console.error('Error en apiCall:', error)
     throw error // Lanzar error para manejarlo en los llamados
