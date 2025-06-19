@@ -50,7 +50,6 @@ class UsuariosModels {
                         if (result[0].hab_usu === 0) {
                             return reject({ msj: 'Usuario inactivo' })
                         }
-                        console.log(result[0].hab_usu)
                         resolve(result)
                     })
 
@@ -59,9 +58,9 @@ class UsuariosModels {
                 const passwordMatch = await bcrypt.compare(usuario.clave, clave);
                 let token;
                 if (!passwordMatch) {
-                   return reject({ msj: 'Contraseña incorrecta' })
+                    return reject({ msj: 'Contraseña incorrecta' })
                 } else {
-                    token = jwt.sign({ id_usu: data[0].id, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT)
+                    token = jwt.sign({ id: data[0].id_usu, usuario:data[0].usuario, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT, { expiresIn: '8h' })
                 }
                 resolve({ msj: 'Ingreso con exito', token: token })
             } catch (error) {

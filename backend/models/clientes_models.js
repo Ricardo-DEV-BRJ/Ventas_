@@ -28,7 +28,7 @@ class ClientesModels {
             const vacio = vacios(cliente)
             const data = Object.values(cliente)
             if (data.length != vacio) {
-                return reject({ msj: "No se pueden enviar datos vacios" })
+                return reject({ msj_error: "No se pueden enviar datos vacios" })
             }
             try {
                 const id_cli = uuidv4()
@@ -38,15 +38,15 @@ class ClientesModels {
                 const params = [id_cli, cliente.nom_cli, cliente.ape_cli, cliente.iden, cliente.tel_cli, cliente.email, hab_cli]
                 const all_data = incompletos(params, field)
                 if (!all_data) {
-                    return reject({ msj: "Datos incompletos" })
+                    return reject({ msj_error: "Datos incompletos" })
                 }
 
                 connection.query(query, params, function (error, result) {
                     if (error) {
                         if (error.sqlMessage.includes('Duplicate')) {
-                            return reject({ msj: 'Identificación duplicada' })
+                            return reject({ msj_error: 'Identificación duplicada' })
                         }
-                        return reject({ msj: 'Error al crear cliente', error: error })
+                        return reject({ msj_error: 'Error al crear cliente', error: error })
                     }
                     resolve({ msj: 'Cliente creado con éxito' })
                 })
@@ -61,10 +61,10 @@ class ClientesModels {
             const vacio = vacios(cliente)
             const data = Object.values(cliente)
             if (data.length != vacio) {
-                return reject({ msj: "No se pueden enviar datos vacios" })
+                return reject({ msj_error: "No se pueden enviar datos vacios" })
             }
             if (!cliente.id_cli) {
-                return reject({ mjs: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             let update = []
             let params = []
@@ -96,16 +96,16 @@ class ClientesModels {
             console.log(update)
             params.push(cliente.id_cli)
             if (update.length === 0) {
-                return reject({ msj: "Sin datos para modificar" })
+                return reject({ msj_error: "Sin datos para modificar" })
             }
             try {
                 const query = modificar('clientes', update, 'id_cli')
                 connection.query(query, params, function (error, result) {
                     if (error) {
-                        return reject({ msj: 'Error al modificar', error: error })
+                        return reject({ msj_error: 'Error al modificar', error: error })
                     }
                     if (result.affectedRows === 0) {
-                        return reject({ msj: 'Cliente no encontrado' })
+                        return reject({ msj_error: 'Cliente no encontrado' })
                     }
                     resolve({ msj: 'Modificado con exito' })
                 })
@@ -119,16 +119,16 @@ class ClientesModels {
     eliminar(cliente) {
         return new Promise((resolve, reject) => {
             if (!cliente.id_cli) {
-                return reject({ mjs: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             const params = [false, cliente.id_cli]
             const query = eliminar('clientes', 'hab_cli', 'id_cli')
             connection.query(query, params, function(error, result){
                 if (error) {
-                        return reject({ msj: 'Error al eliminar', error: error })
+                        return reject({ msj_error: 'Error al eliminar', error: error })
                     }
                     if (result.affectedRows === 0) {
-                        return reject({ msj: 'Cliente no encontrado' })
+                        return reject({ msj_error: 'Cliente no encontrado' })
                     }
                     resolve({ msj: 'Eliminado con exito' })
             })

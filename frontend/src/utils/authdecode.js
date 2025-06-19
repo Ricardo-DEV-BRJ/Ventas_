@@ -27,14 +27,6 @@ function getPersonId() {
 
 /**
  * getAuthPayload devuelve el payload del token en json
- * @return {String} la sucursal de la persona loggueada
- */
-function getPersonSucursal() {
-  return getAuthPayload().sucursal;
-}
-
-/**
- * getAuthPayload devuelve el payload del token en json
  * @return {String} el usuario completo de la persona loggueada
  */
 function getPersonUsuario() {
@@ -67,7 +59,6 @@ function getRol() {
 export {
   getPersonId,
   getToken,
-  getPersonSucursal,
   getPersonUsuario,
   getRol,
   getPersonNombre,

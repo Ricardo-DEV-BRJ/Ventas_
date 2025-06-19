@@ -25,7 +25,7 @@ function change_theme() {
 
 <style scoped>
 .tema {
-    z-index: 9999;
+    z-index: 9999999;
     right: 0;
 }
 </style>

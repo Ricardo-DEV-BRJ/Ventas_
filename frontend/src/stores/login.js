@@ -8,6 +8,12 @@ export const useLoginStore = defineStore('login', () => {
     })
     const loading = ref(false)
 
+    function clear() {
+        data.value = {
+            usuario: '',
+            clave: ''
+        }
+    }
 
     async function login() {
         loading.value = true
@@ -17,14 +23,13 @@ export const useLoginStore = defineStore('login', () => {
         }
         try {
             const result = await apiCall('usuarios/login', 'POST', obj)
-            loading.value = false
             if (result.token) {
                 localStorage.setItem('token', result.token)
-                console.log(result.msj)
-                router.push({ path: '/', query: { usuario: data.value.usuario } })
+                router.push({ path: '/', query: { login: true } })
+                clear()
             } else {
-                console.log(result.msj)
             }
+            loading.value = false
         } catch (error) {
             console.error(error)
         }

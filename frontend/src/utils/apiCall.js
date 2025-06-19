@@ -3,7 +3,6 @@ import { getToken } from './authdecode'
 const backendURL = import.meta.env.VITE_BACKEND_URL
 
 export async function apiCall(endpoint, method = 'GET', data = null) {
-  console.log(import.meta.env.VITE_BACKEND_URL)
   try {
     // const token = localStorage.getItem('token') // Obtener el token del localStorage
 

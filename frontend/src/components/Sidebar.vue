@@ -2,7 +2,7 @@
     <v-navigation-drawer expand-on-hover rail>
         <v-list>
             <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-                subtitle="sandra_a88@gmailcom" title="Sandra Adams"></v-list-item>
+                subtitle="sandra_a88@gmailcom" :title="usuario"></v-list-item>
         </v-list>
 
         <v-divider></v-divider>
@@ -10,6 +10,8 @@
         <v-list density="compact" nav>
             <v-list-item v-for="link in items" :prepend-icon="link.icon" :to="`/${link.ruta}`" :title="link.title"
                 :value="link.value"></v-list-item>
+            <v-list-item prepend-icon="mdi-logout"> <v-btn color="error" @click="logout">Cerrar
+                    sesión</v-btn></v-list-item>
         </v-list>
     </v-navigation-drawer>
 
@@ -23,6 +25,8 @@
             <v-list>
                 <v-list-item v-for="link in items" :prepend-icon="link.icon" :to="`/${link.ruta}`" :title="link.title"
                     :value="link.value"></v-list-item>
+                <v-list-item prepend-icon="mdi-logout"> <v-btn color="error" @click="logout">Cerrar
+                        sesión</v-btn></v-list-item>
             </v-list>
         </v-navigation-drawer>
     </div>
@@ -30,6 +34,10 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { getPersonUsuario } from '../utils/authdecode'
+
+const router = useRouter()
+const usuario = ref(getPersonUsuario())
 
 const items = [
     {
@@ -83,6 +91,10 @@ const items = [
 
 ]
 
+function logout() {
+    localStorage.removeItem('token')
+    router.push({ path: '/login' })
+}
 const drawer = ref(false)
 const group = ref(null)
 
