@@ -1,5 +1,6 @@
 <template>
-    <div>
-        productos
-    </div>
+   
 </template>
+
+<script setup>
+</script>

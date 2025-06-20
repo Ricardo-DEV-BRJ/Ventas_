@@ -15,6 +15,7 @@ declare module 'vue' {
     DataTable: typeof import('./src/components/DataTable.vue')['default']
     FormAdd: typeof import('./src/components/FormAdd.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Panel_accion: typeof import('./src/components/Panel_accion.vue')['default']
     Prueba: typeof import('./src/components/Prueba.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

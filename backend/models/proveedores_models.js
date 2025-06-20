@@ -9,11 +9,18 @@ class ProveedoresModels {
             const query = todos('proveedores', 'hab_prov', 'DESC')
             connection.query(query, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error del servidor', error: error })
+                    return reject({ msj_error: 'Error del servidor', error: error })
                 }
                 if (result.length === 0) {
-                    return reject({ msj: 'Sin datos para mostrar' })
+                    return reject({ msj_error: 'Sin datos para mostrar' })
                 }
+                result.map((item)=>{
+                    if (item.hab_prov == 1) {
+                        item.hab_prov = true
+                    } else {
+                        item.hab_prov = false
+                    }
+                })
                 resolve(result)
             })
         })
@@ -25,10 +32,10 @@ class ProveedoresModels {
             const query = uno('proveedores', 'id_prov')
             connection.query(query, params, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error del servidor', error: error })
+                    return reject({ msj_error: 'Error del servidor', error: error })
                 }
                 if (result.length === 0) {
-                    return reject({ msj: 'Proveedor no encontrado' })
+                    return reject({ msj_error: 'Proveedor no encontrado' })
                 }
                 resolve(result)
             })
@@ -41,7 +48,7 @@ class ProveedoresModels {
             const vacio = vacios(proveedor)
             const data = Object.values(proveedor)
             if (data.length != vacio) {
-                return reject({ msj: 'No se deben enviar datos vacíos' })
+                return reject({ msj_error: 'No se deben enviar datos vacíos' })
             }
             const id_prov = uuidv4()
             const fec_prov = new Date()
@@ -51,14 +58,14 @@ class ProveedoresModels {
             const query = crear('proveedores', fields)
             const all_data = incompletos(params, fields)
             if (!all_data) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             connection.query(query, params, function (error, result, field) {
                 if (error) {
                     if (error.sqlMessage.includes('Duplicate')) {
-                        return reject({ msj: 'Identificación registrada' })
+                        return reject({ msj_error: 'Identificación registrada' })
                     }
-                    return reject({ msj: 'Error del servidor', error: error })
+                    return reject({ msj_error: 'Error del servidor', error: error })
                 }
                 resolve({ msj: 'Registrado con éxito' })
             })
@@ -71,13 +78,13 @@ class ProveedoresModels {
             const vacio = vacios(proveedor)
             const data = Object.values(proveedor)
             if (data.length != vacio) {
-                return reject({ msj: 'No se deben enviar datos vacios' })
+                return reject({ msj_error: 'No se deben enviar datos vacios' })
             }
             let update = []
             let params = []
 
             if (!proveedor.id_prov) {
-                return reject({ msj: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             if (proveedor.nom_prov) {
                 update.push('nom_prov')
@@ -88,7 +95,7 @@ class ProveedoresModels {
                 params.push(proveedor.iden_prov)
             }
             if (update.length === 0) {
-                return reject({ msj: 'Sin datos para modificar' })
+                return reject({ msj_error: 'Sin datos para modificar' })
             }
 
             params.push(proveedor.id_prov)
@@ -96,9 +103,9 @@ class ProveedoresModels {
             connection.query(query, params, function (error, result, field) {
                 if (error) {
                     if (error.sqlMessage.includes('Duplicate')) {
-                        return reject({ msj: 'Identificación o nombre ya registrado' })
+                        return reject({ msj_error: 'Identificación o nombre ya registrado' })
                     }
-                    return reject({ msj: 'Error del servidor', error: error })
+                    return reject({ msj_error: 'Error del servidor', error: error })
                 }
                 resolve({ msj: 'Proveedor modificado con exito' })
             })
@@ -109,13 +116,13 @@ class ProveedoresModels {
     eliminar(proveedor) {
         return new Promise((resolve, reject) => {
             if (!proveedor.id_prov) {
-                return reject({ msj: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             const params = [false, proveedor.id_prov]
             const query = eliminar('proveedores', 'hab_prov', 'id_prov')
             connection.query(query, params, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error al eliminar', error: error })
+                    return reject({ msj_error: 'Error al eliminar', error: error })
                 }
                 resolve({ msj: 'Eliminado con exito' })
             })

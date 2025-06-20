@@ -1,8 +1,7 @@
 <template>
     <v-navigation-drawer expand-on-hover rail>
         <v-list>
-            <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-                subtitle="sandra_a88@gmailcom" :title="usuario"></v-list-item>
+            <v-list-item :subtitle="`${nombre} ${apellido}`" :title="usuario" prepend-icon="mdi-shield-account"></v-list-item>
         </v-list>
 
         <v-divider></v-divider>
@@ -34,10 +33,12 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { getPersonUsuario } from '../utils/authdecode'
+import { getPersonApellido, getPersonNombre, getPersonUsuario } from '../utils/authdecode'
 
 const router = useRouter()
 const usuario = ref(getPersonUsuario())
+const nombre = ref(getPersonNombre())
+const apellido = ref(getPersonApellido())
 
 const items = [
     {

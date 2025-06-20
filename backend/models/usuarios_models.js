@@ -9,7 +9,7 @@ class UsuariosModels {
     registrar(usuario) {
         return new Promise(async (resolve, reject) => {
             if (!usuario.iden || !usuario.nom_usu || !usuario.ape_usu || !usuario.usuario || !usuario.clave || !usuario.id_rol) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             const id_usu = uuidv4();
             const hash = bcrypt.hashSync(usuario.clave, saltRounds)
@@ -20,10 +20,10 @@ class UsuariosModels {
             connection.query(query, params, function (error, result, field) {
                 if (error) {
                     if (error.sqlMessage.includes('Duplicate')) {
-                        return reject({ msj: 'Usuario o cedula ya existentes' })
+                        return reject({ msj_error: 'Usuario o cedula ya existentes' })
 
                     }
-                    return reject({ msj: 'Error al registrar', error: error })
+                    return reject({ msj_error: 'Error al registrar', error: error })
                 }
                 resolve({ msj: 'Registrado con exito' })
             })
@@ -34,7 +34,7 @@ class UsuariosModels {
     login(usuario) {
         return new Promise(async (resolve, reject) => {
             if (!usuario.usuario || !usuario.clave) {
-                reject({ msj: 'Datos incompletos' })
+                reject({ msj_error: 'Datos incompletos' })
             }
             const params = [usuario.usuario]
             const query = 'SELECT u.id_usu, u.nom_usu, u.ape_usu, u.usuario, r.nom_rol, u.clave, u.hab_usu FROM usuarios u INNER JOIN roles r ON u.id_rol = r.id_rol WHERE usuario = ?'
@@ -42,13 +42,13 @@ class UsuariosModels {
                 const data = await new Promise((resolve, reject) => {
                     connection.query(query, params, function (error, result) {
                         if (error) {
-                            return reject({ msj: 'Error del servidor', error: error })
+                            return reject({ msj_error: 'Error del servidor', error: error })
                         }
                         if (result.length == 0) {
-                            return reject({ msj: 'Usuario no encontrado' })
+                            return reject({ msj_error: 'Usuario no encontrado' })
                         }
                         if (result[0].hab_usu === 0) {
-                            return reject({ msj: 'Usuario inactivo' })
+                            return reject({ msj_error: 'Usuario inactivo' })
                         }
                         resolve(result)
                     })
@@ -58,7 +58,7 @@ class UsuariosModels {
                 const passwordMatch = await bcrypt.compare(usuario.clave, clave);
                 let token;
                 if (!passwordMatch) {
-                    return reject({ msj: 'Contraseña incorrecta' })
+                    return reject({ msj_error: 'Contraseña incorrecta' })
                 } else {
                     token = jwt.sign({ id: data[0].id_usu, usuario:data[0].usuario, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT, { expiresIn: '8h' })
                 }
@@ -74,16 +74,15 @@ class UsuariosModels {
             const query = 'SELECT * FROM usuarios ORDER BY hab_usu DESC'
             connection.query(query, function (error, result, field) {
                 if (error) {
-                    return reject({ mjs: 'Error al consultar', error: error })
+                    return reject({ msj_error: 'Error al consultar', error: error })
                 }
                 if (result.length === 0) {
-                    return reject({ msj: 'Sin usuarios registrados' })
+                    return reject({ msj_error: 'Sin usuarios registrados' })
                 }
                 const data = result.map((item) => ({
                     ...item,
                     hab_usu: item.hab_usu === 1 ? true : false
                 }))
-                console.log(data)
                 resolve(data)
             })
         })
@@ -98,10 +97,10 @@ class UsuariosModels {
             const query = 'SELECT * FROM usuarios WHERE id_usu = ?'
             connection.query(query, params, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error del servidor', error: error })
+                    return reject({ msj_error: 'Error del servidor', error: error })
                 }
                 if (result.length === 0) {
-                    return reject({ msj: 'Usuario no encontrado' })
+                    return reject({ msj_error: 'Usuario no encontrado' })
                 }
                 resolve(result)
             })
@@ -146,16 +145,16 @@ class UsuariosModels {
 
             params.push(usuario.id_usu)
             if (params.length === 1) {
-                return reject({ msj: 'Sin datos para modificar' })
+                return reject({ msj_error: 'Sin datos para modificar' })
             }
 
             const query = `UPDATE usuarios SET ${update.join(', ')} WHERE id_usu = ?`
             connection.query(query, params, function (error, result, field) {
                 if (error) {
                     if (error.sqlMessage.includes('Duplicate')) {
-                        return reject({ msj: 'Identificación duplicada' })
+                        return reject({ msj_error: 'Identificación duplicada' })
                     }
-                    return reject({ msj: 'Error al modificar', error: error })
+                    return reject({ msj_error: 'Error al modificar', error: error })
                 }
                 resolve({ msj: 'Modificado con exito' })
             })
@@ -172,7 +171,7 @@ class UsuariosModels {
             const query = 'UPDATE usuarios SET hab_usu = ? WHERE id_usu = ?'
             connection.query(query, params, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error al eliminar', error: error })
+                    return reject({ msj_error: 'Error al eliminar', error: error })
                 }
                 resolve({ msj: 'Eliminado con exito' })
             })
@@ -184,7 +183,7 @@ class UsuariosModels {
             const query = 'SELECT * FROM roles'
             connection.query(query, function (error, result, field) {
                 if (error) {
-                    return reject({ msj: 'Error al consultar' })
+                    return reject({ msj_error: 'Error al consultar' })
                 }
                 resolve(result)
             })

@@ -2,40 +2,29 @@ import { defineStore } from "pinia";
 import { apiCall } from "../utils/apiCall";
 import { empty, mail, modify_data, tel } from "@/utils/valiaciones";
 import { capitalize } from "vue";
-export const useClientesStore = defineStore('clientes', () => {
+export const useProveedoresStore = defineStore('proveedores', () => {
     const data = ref({
-        nom_cli: '',
-        ape_cli: '',
+        nom_prov: '',
         iden: null,
         iden_number: '',
-        tel: null,
-        tel_num: '',
-        type_email: null,
-        email: '',
     })
     const backup = ref({})
     const loading = ref(false)
     const loading_button = ref(false)
     const loading_delete = ref(false)
     const headers = ref([
-        { key: 'nom_cli', title: 'Nombre' },
-        { key: 'ape_cli', title: 'Apellido' },
-        { key: 'iden', title: 'Identificación' },
-        { key: 'tel_cli', title: 'Telefono' },
-        { key: 'email', title: 'Correo' },
+        { key: 'nom_prov', title: 'Nombre' },
+        { key: 'iden_prov', title: 'RIF' },
+        { key: 'hab_prov', title: 'Estado' },
         { key: 'actions', title: 'Acciones' },
-
     ])
     const fields = ref([
-        { key: 'nom_cli', type: 'text', title: 'Nombre' },
-        { key: 'ape_cli', type: 'text', title: 'Apellido' },
-        { key: 'iden', type: 'select', subKey: 'iden_number', subType: 'text', title: 'Tipo', subTitle: 'Identificación', constante: 'indentificacion' },
-        { key: 'tel', type: 'select', subKey: 'tel_num', subType: 'number', title: 'Codigo', subTitle: 'Telefono', constante: 'codigos' },
-        { key: 'email', type: 'select', subKey: 'type_email', subType: 'text', title: 'Correo', subTitle: '@example.com', constante: 'correos' },
+        { key: 'nom_prov', type: 'text', title: 'Nombre' },
+        { key: 'iden', type: 'select', subKey: 'iden_number', subType: 'text', title: 'RIF', subTitle: 'Identificación', constante: 'rif' },
     ])
     const items = ref([])
     const dialogOpen = ref(false)
-    const section = 'Clientes'
+    const section = 'Proveedores'
     const title_form = ref('')
     
     const delete_success = ref(false)
@@ -58,7 +47,7 @@ export const useClientesStore = defineStore('clientes', () => {
     async function get() {
         loading.value = true
         try {
-            const result = await apiCall('clientes')
+            const result = await apiCall('proveedor')
             items.value = result
             loading.value = false
         } catch (error) {
@@ -67,52 +56,52 @@ export const useClientesStore = defineStore('clientes', () => {
     }
 
     async function add() {
-        loading_button.value = true
-        const val_tel = tel(data.value.tel, data.value.tel_num)
-        const val_mail = mail(data.value.email, data.value.type_email)
-        let msj = []
-        if (!val_tel.result) {
-            msj.push(val_tel.msj)
-        }
-        if (!val_mail.result) {
-            msj.push(val_mail.msj)
-        }
-        if (msj.length > 0) {
-            alertaCrud('Error de validación', true, msj, 'warning')
-            loading_button.value = false
-            return;
-        }
-        try {
-            let obj = {
-                nom_cli: capitalize(data.value.nom_cli),
-                ape_cli: capitalize(data.value.ape_cli),
-                iden: String(data.value.iden) + String(data.value.iden_number),
-                tel_cli: val_tel.telefono,
-                email: val_mail.mail,
-            }
-            const validacion_vacio = empty(obj)
-            if (!validacion_vacio.result) {
-                msj.push(validacion_vacio.msj)
-            }
-            if (msj.length > 0) {
-                alertaCrud('Error de validación', true, msj, 'warning')
-                return;
-            }
-            const result = await apiCall('clientes/crear', 'POST', obj)
-            if (result.msj_error) {
-                alertaCrud('Error de al registrar', true, [result.msj_error], 'error')
-                loading_button.value = false
-                return;
-            }
-            if (result.msj) {
-                alertaCrud('Registrado con éxito', true, [result.msj], 'success')
-            }
-            loading_button.value = false
-            dialogOpen.value = false
-            await get()
-        } catch (error) {
-            console.error(error)
-        }
+        // loading_button.value = true
+        // const val_tel = tel(data.value.tel, data.value.tel_num)
+        // const val_mail = mail(data.value.email, data.value.type_email)
+        // let msj = []
+        // if (!val_tel.result) {
+        //     msj.push(val_tel.msj)
+        // }
+        // if (!val_mail.result) {
+        //     msj.push(val_mail.msj)
+        // }
+        // if (msj.length > 0) {
+        //     alertaCrud('Error de validación', true, msj, 'warning')
+        //     loading_button.value = false
+        //     return;
+        // }
+        // try {
+        //     let obj = {
+        //         nom_cli: capitalize(data.value.nom_cli),
+        //         ape_cli: capitalize(data.value.ape_cli),
+        //         iden: String(data.value.iden) + String(data.value.iden_number),
+        //         tel_cli: val_tel.telefono,
+        //         email: val_mail.mail,
+        //     }
+        //     const validacion_vacio = empty(obj)
+        //     if (!validacion_vacio.result) {
+        //         msj.push(validacion_vacio.msj)
+        //     }
+        //     if (msj.length > 0) {
+        //         alertaCrud('Error de validación', true, msj, 'warning')
+        //         return;
+        //     }
+        //     const result = await apiCall('clientes/crear', 'POST', obj)
+        //     if (result.msj_error) {
+        //         alertaCrud('Error de al registrar', true, [result.msj_error], 'error')
+        //         loading_button.value = false
+        //         return;
+        //     }
+        //     if (result.msj) {
+        //         alertaCrud('Registrado con éxito', true, [result.msj], 'success')
+        //     }
+        //     loading_button.value = false
+        //     dialogOpen.value = false
+        //     await get()
+        // } catch (error) {
+        //     console.error(error)
+        // }
     }
 
     async function edit_item(item) {
@@ -205,9 +194,9 @@ export const useClientesStore = defineStore('clientes', () => {
     async function delete_item(item) {
         delete_success.value = true
         loading_delete.value = true
-        let obj = { id_cli: item.id_cli }
+        let obj = { id_prov: item.id_prov }
         try {
-            const result = await apiCall('clientes/eliminar', 'DELETE', obj)
+            const result = await apiCall('proveedor/eliminar', 'DELETE', obj)
             if (result.msj_error) {
                 alertaCrud('Error de al eliminar', true, [result.msj_error], 'error')
                 loading_delete.value = false

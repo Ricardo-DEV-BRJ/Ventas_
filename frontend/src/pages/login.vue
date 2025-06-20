@@ -9,15 +9,15 @@
                         <v-text-field v-model="loginStore.data.clave" :rules="[rules.required, rules.empty]"
                             label="Contraseña" type="password" autocomplete="off" @keyup.enter="loginStore.login"
                             variant="underlined"></v-text-field>
-                        <v-btn :loading="loginStore.loading" color="primary" class="w-100 text-capitalize"
-                            @click="loginStore.login">
-                            Ingresar
-                        </v-btn>
+                        <v-btn :loading="loginStore.loading" text="Ingresar" color="primary" title="Ingresar"
+                            class="w-100 text-capitalize" @click="login"></v-btn>
                     </v-container>
                 </v-form>
             </v-card>
         </v-col>
     </v-main>
+    <Aviso :store="loginStore" />
+
 
 </template>
 
@@ -30,6 +30,14 @@ const rules = {
     empty: value => value.trim() !== '' || 'Campo vacío'
 }
 
+function login() {
+    if (valid) {
+        loginStore.login()
+    } else {
+
+    }
+}
+
 </script>
 
 <style scoped>
@@ -39,5 +47,4 @@ const rules = {
     background-attachment: fixed;
     background-size: cover;
 }
-
 </style>

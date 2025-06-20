@@ -8,6 +8,21 @@ export const useLoginStore = defineStore('login', () => {
     })
     const loading = ref(false)
 
+    const alert = ref(false)
+    const alertMsj = ref([])
+    const alertTitle = ref('')
+    const alertType = ref('')
+    function alertaCrud(title, shoAlert, msj, type) {
+        alert.value = shoAlert
+        alertMsj.value = msj
+        alertTitle.value = title
+        alertType.value = type
+        setTimeout(() => {
+            alert.value = false
+        }, 3000);
+
+    }
+
     function clear() {
         data.value = {
             usuario: '',
@@ -27,7 +42,11 @@ export const useLoginStore = defineStore('login', () => {
                 localStorage.setItem('token', result.token)
                 router.push({ path: '/', query: { login: true } })
                 clear()
-            } else {
+            }
+            if (result.msj_error) {
+                alertaCrud('Error de verificacion', true, [result.msj_error], 'warning')
+                loading.value = false
+                return;
             }
             loading.value = false
         } catch (error) {
@@ -38,5 +57,5 @@ export const useLoginStore = defineStore('login', () => {
 
 
 
-    return { data, loading, login };
+    return { data, loading, alert, alertMsj, alertTitle, alertType, login, alertaCrud };
 })

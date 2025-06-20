@@ -33,7 +33,7 @@ function tel(cod, tel) {
         const telefonoFormateado = String(cod) + String(tel);
         const valido = parseFloat(telefonoFormateado) && /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(telefonoFormateado);
         return {
-            result: valido, telefono: telefonoFormateado, msj: valido ? '' : 'Número de teléfono inválido'
+            result: valido, telefono: String(cod) + '-' + String(tel), msj: valido ? '' : 'Número de teléfono inválido'
         }
     }
 }
@@ -63,8 +63,25 @@ function mail(mail, type) {
 }
 
 
+function modify_data(data, backup) {
+    let result = {}
+    const datos = Object.keys(data)
+    datos.forEach((key) => {
+        if (data[key] !== backup[key]) {
+            result[key] = data[key]
+        }
+    });
+
+    if (Object.keys(result).length === 0) {
+        return { result: false, msj: 'Datos sin modificar' }
+    }
+    return { result: true, data: result }
+}
+
+
 export {
     empty,
     tel,
-    mail
+    mail,
+    modify_data
 }
