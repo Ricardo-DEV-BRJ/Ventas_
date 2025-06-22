@@ -60,7 +60,7 @@ class UsuariosModels {
                 if (!passwordMatch) {
                     return reject({ msj_error: 'Contraseña incorrecta' })
                 } else {
-                    token = jwt.sign({ id: data[0].id_usu, usuario:data[0].usuario, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT, { expiresIn: '8h' })
+                    token = jwt.sign({ id: data[0].id_usu, usuario: data[0].usuario, nombre: data[0].nom_usu, apellido: data[0].ape_usu, rol: data[0].nom_rol }, process.env.SECRET_JWT, { expiresIn: '8h' })
                 }
                 resolve({ msj: 'Ingreso con exito', token: token })
             } catch (error) {
@@ -76,14 +76,14 @@ class UsuariosModels {
                 if (error) {
                     return reject({ msj_error: 'Error al consultar', error: error })
                 }
-                if (result.length === 0) {
-                    return reject({ msj_error: 'Sin usuarios registrados' })
+                if (result.length > 0) {
+                    result.map((item) => ({
+                        ...item,
+                        hab_usu: item.hab_usu === 1 ? true : false
+                    }))
                 }
-                const data = result.map((item) => ({
-                    ...item,
-                    hab_usu: item.hab_usu === 1 ? true : false
-                }))
-                resolve(data)
+
+                resolve(result)
             })
         })
     }
@@ -91,7 +91,7 @@ class UsuariosModels {
     uno(usuario) {
         return new Promise((resolve, reject) => {
             if (!usuario.id_usu) {
-                return reject({ msj: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             const params = [usuario.id_usu]
             const query = 'SELECT * FROM usuarios WHERE id_usu = ?'
@@ -110,7 +110,7 @@ class UsuariosModels {
     modificar(usuario) {
         return new Promise((resolve, reject) => {
             if (!usuario.id_usu || usuario.id_usu.trim() === '') {
-                return reject({ mjs: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             let update = []
             let params = []
@@ -165,7 +165,7 @@ class UsuariosModels {
     eliminar(usuario) {
         return new Promise((resolve, reject) => {
             if (!usuario.id_usu || usuario.id_usu.trim() === '') {
-                return reject({ mjs: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             const params = [false, usuario.id_usu]
             const query = 'UPDATE usuarios SET hab_usu = ? WHERE id_usu = ?'

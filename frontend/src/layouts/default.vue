@@ -4,8 +4,8 @@
     <v-main>
       <router-view />
     </v-main>
-    <Button_theme />
   </div>
+  <Button_theme />
 
   <AppFooter />
 </template>

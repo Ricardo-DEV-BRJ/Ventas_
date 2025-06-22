@@ -13,6 +13,7 @@ declare module 'vue' {
     Bienvenido: typeof import('./src/components/Bienvenido.vue')['default']
     Button_theme: typeof import('./src/components/button_theme.vue')['default']
     DataTable: typeof import('./src/components/DataTable.vue')['default']
+    DataTableInfo: typeof import('./src/components/DataTableInfo.vue')['default']
     FormAdd: typeof import('./src/components/FormAdd.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Panel_accion: typeof import('./src/components/Panel_accion.vue')['default']

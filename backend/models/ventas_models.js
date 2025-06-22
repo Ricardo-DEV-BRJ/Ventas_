@@ -7,16 +7,16 @@ class VentasModels {
     detalle(venta) {
         return new Promise((resolve, reject) => {
             if (!venta.id_ven) {
-                return reject({ msj: 'ID requerido' })
+                return reject({ msj_error: 'ID requerido' })
             }
             const query = 'SELECT d.id_ven, d.num_fac, v.tip_factura, d.descrip, d.tasa, d.monto_bs, d.monto_dolar, d.id_pag, d.fec_ven, d.aten_por, d.obs, c.nom_cli, c.ape_cli, c.tel_cli, c.iden, c.email, pa.id_pag, pa.met_ref FROM detalle_venta d INNER JOIN ventas v ON d.id_ven = v.id_ven INNER JOIN clientes c ON d.id_cli = c.id_cli INNER JOIN pagos pa ON d.id_pag = pa.id_pag WHERE d.id_ven = ?'
             const params = [venta.id_ven]
             connection.query(query, params, function (error, result) {
                 if (error) {
-                    return reject({ msj: 'Error al consultar', error: error })
+                    return reject({ msj_error: 'Error al consultar', error: error })
                 }
                 if (result.length === 0) {
-                    return reject({ msj: 'Venta inexistente' })
+                    return reject({ msj_error: 'Venta inexistente' })
                 }
                 resolve(result)
             })
@@ -26,10 +26,10 @@ class VentasModels {
     crear(venta) {
         return new Promise(async (resolve, reject) => {
             if (!venta.tip_factura | !venta.tasa || !venta.monto_bs | !venta.monto_dolar || !venta.id_pag || !venta.id_cli || !venta.ant_por || !venta.obs) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             if (venta.descrip === undefined || venta.descrip === null) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             const id_ven = uuidv4()
             const fec_ven = new Date()
@@ -50,13 +50,13 @@ class VentasModels {
             const field_graf = ['id_graf', 'id_ven', 'id_prod', 'cantidad', 'fec_prod_ven']
             const quer_graf = crear('graf_prod', field_graf)
             if (!obj_vacio) {
-                return reject({ msj: 'No se pueden enviar datos vacíos' })
+                return reject({ msj_error: 'No se pueden enviar datos vacíos' })
             }
             if (!val_vacio_det) {
-                return reject({ msj: 'No se pueden enviar datos vacíos' })
+                return reject({ msj_error: 'No se pueden enviar datos vacíos' })
             }
             if (!data_complete) {
-                return reject({ msj: 'Datos de productos incompletos' })
+                return reject({ msj_error: 'Datos de productos incompletos' })
             }
             connection.beginTransaction(async (error) => {
                 if (error) return reject(error);
@@ -65,7 +65,7 @@ class VentasModels {
                     for (const producto of venta.descrip) {
                         const result = await new Promise((resolve, reject) => {
                             connection.query(query_exi, [producto.id_prod], (error, result) => {
-                                if (error) reject({ msj: 'Error al consultar', error });
+                                if (error) reject({ msj_error: 'Error al consultar', error });
                                 else resolve(result);
                             });
                         });
@@ -136,10 +136,10 @@ class VentasModels {
     pago(venta) {
         return new Promise((resolve, reject) => {
             if (!venta.monto_bs || !venta.monto_dolar || venta.total) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             if (venta.met_ref === undefined || venta.met_ref === null) {
-                return reject({ msj: 'Datos incompletos' })
+                return reject({ msj_error: 'Datos incompletos' })
             }
             const id_pag = uuidv4()
             const fields = ['id_pag', 'monto_bs', 'monto_dolar', 'met_ref']
@@ -151,19 +151,19 @@ class VentasModels {
             const val_pay = [venta.monto_bs, venta.monto_dolar]
             const data_pay = empty(val_pay)
             if (!data_pay) {
-                return reject({ msj: 'No se pueden enviar datos vacíos' })
+                return reject({ msj_error: 'No se pueden enviar datos vacíos' })
             }
             if (!obj_vacio) {
-                return reject({ msj: 'No se pueden enviar datos vacíos' })
+                return reject({ msj_error: 'No se pueden enviar datos vacíos' })
             }
             if (!data_complete) {
-                return reject({ msj: 'Datos de metodo de pago incompletos' })
+                return reject({ msj_error: 'Datos de metodo de pago incompletos' })
             }
             const query = crear('pagos', fields)
             try {
                 connection.query(query, params, function (error, result) {
                     if (error) {
-                        return reject({ msj: 'Error al registrar', error: error })
+                        return reject({ msj_error: 'Error al registrar', error: error })
                     }
                     resolve({ msj: 'Pago registrado con exito' })
                 })
@@ -178,10 +178,10 @@ class VentasModels {
         return new Promise(async (resolve, reject) => {
             const id_dev = uuidv4()
             if (!venta.id_ven) {
-                return reject({ msj: 'Datos de devolución incompletos' })
+                return reject({ msj_error: 'Datos de devolución incompletos' })
             }
             if (venta.id_ven.trim() === '') {
-                return reject({ msj: 'Datos vacíos' })
+                return reject({ msj_error: 'Datos vacíos' })
             }
             const fields_dev = ['id_dev', 'id_ven', 'num_fac', 'monto_bs', 'monto_dolar', 'prods']
             const query_dev = crear('devoluciones', fields_dev)
@@ -196,7 +196,7 @@ class VentasModels {
             const params_check_prod = 'SELECT * FROM productos WHERE id_prod = ?'
 
             connection.beginTransaction(async (error) => {
-                if (error) return reject({ msj: 'Error al consultar', error: error })
+                if (error) return reject({ msj_error: 'Error al consultar', error: error })
             })
             try {
                 await new Promise((resolve, reject) => {
@@ -205,7 +205,7 @@ class VentasModels {
                             return reject(error);
                         }
                         if (result[0].hab_ven === 0) {
-                            return reject({ msj: 'Devolucion no valida' })
+                            return reject({ msj_error: 'Devolucion no valida' })
                         }
                         resolve()
                     })
@@ -244,7 +244,7 @@ class VentasModels {
                     await new Promise((resolve, reject) => {
                         connection.query(params_check_prod, [producto.id_prod], function (error, result) {
                             if (error) return reject(error);
-                            else if (result.length === 0) return reject({ msj: 'Producto inexistente' })
+                            else if (result.length === 0) return reject({ msj_error: 'Producto inexistente' })
                             else resolve()
                         })
                     })
@@ -278,10 +278,10 @@ class VentasModels {
             const field_obj = ['id_prod', 'nom_prod', 'cantidad', 'prec_uni_bs', 'prec_uni_dolar', 'monto_prod_bs', 'monto_prod_dolar']
             const obj_empty = object_vacios(venta.prods, field_obj)
             if (!obj_empty) {
-                return reject({ msj: 'Datos de producto vacíos' })
+                return reject({ msj_error: 'Datos de producto vacíos' })
             }
             if (venta.id_ven.trim() === '') {
-                return reject({ msj: 'Datos vacíos' })
+                return reject({ msj_error: 'Datos vacíos' })
             }
             const fields_dev = ['id_dev', 'id_ven', 'num_fac', 'monto_bs', 'monto_dolar', 'prods']
             const query_dev = crear('devoluciones', fields_dev)
@@ -295,7 +295,7 @@ class VentasModels {
             const query_ven_finally = eliminar('ventas', 'hab_ven', 'id_ven')
 
             connection.beginTransaction(async (error) => {
-                if (error) return reject({ msj: 'Error al consultar', error: error })
+                if (error) return reject({ msj_error: 'Error al consultar', error: error })
             })
             try {
                 await new Promise((resolve, reject) => {
@@ -304,7 +304,7 @@ class VentasModels {
                             return reject(error);
                         }
                         if (result[0].hab_ven === 0) {
-                            return reject({ msj: 'Devolucion no valida' })
+                            return reject({ msj_error: 'Devolucion no valida' })
                         }
                         resolve()
                     })
@@ -345,7 +345,7 @@ class VentasModels {
                     await new Promise((resolve, reject) => {
                         connection.query(params_check_prod, [producto.id_prod], function (error, result) {
                             if (error) return reject(error);
-                            else if (result.length === 0) return reject({ msj: 'Producto inexistente' })
+                            else if (result.length === 0) return reject({ msj_error: 'Producto inexistente' })
                             else resolve()
 
                         })

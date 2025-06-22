@@ -72,10 +72,10 @@ const items = [
         ruta: 'proveedores'
     },
     {
-        title: 'Categorías',
-        value: 'Categorias',
+        title: 'Categorías y productos',
+        value: 'Categorias_productos',
         icon: 'mdi-shape',
-        ruta: 'categorias'
+        ruta: 'categorias_productos'
     },
     {
         title: 'Productos',

@@ -5,10 +5,10 @@
                 hide-details single-line></v-text-field>
         </template>
         <v-data-table :headers="headers" :items="items" :search="search" :loading="props.store.loading"
-            :mobile="$vuetify.display.mobile" itemsPerPageText="Elementos" loading-text="Cargando...Por Favor espere."
-            class="border-thin rounded-lg">
+            :mobile="$vuetify.display.mobile && store.section != 'Productos'" itemsPerPageText="Elementos"
+            loading-text="Cargando...Por Favor espere." class="border-thin rounded-lg">
             <template v-slot:item.actions="{ item }">
-                <div>
+                <div :class="store.section === 'Productos' ? 'actions' : ''">
                     <v-btn color="primary" title="Editar" icon="mdi-pencil" @click="store.edit_item(item)"
                         variant="text"></v-btn>
                     <v-btn color="error" title="Eliminar" icon="mdi-delete" @click="delete_item(item)"
@@ -16,10 +16,40 @@
 
                 </div>
             </template>
-            <template v-slot:item.hab_prov="{ item }">
-                <div >
-                    <v-chip :color="item.hab_prov ? 'green' : 'red'" :text="item.hab_prov ? 'Activo' : 'Inactivo'"
+            <template v-slot:item.vig_prov="{ item }">
+                <div>
+                    <v-chip :color="item.vig_prov ? 'green' : 'red'" :text="item.vig_prov ? 'Activo' : 'Inactivo'"
                         class="text-uppercase" size="small" label></v-chip>
+                </div>
+            </template>
+            <template v-slot:item.info="{ item }">
+                <div>
+                    <v-btn icon="mdi-ballot" color="info" title="Ver detalles" @click="store.get_detalle(item), store.prod = item.nom_prod"></v-btn>
+                </div>
+            </template>
+            <template v-slot:item.total_existencia="{ item }">
+                <div>
+                    <v-btn color="primary" title="Agregar" icon="mdi-plus-thick" @click="store.add_item(item)"
+                        variant="text"></v-btn>
+                    <v-chip :color="item.total_existencia > 20 ? 'green' : 'red'"
+                        class="text-uppercase text-sm-subtitle-1 text-caption" size="large" label>
+                        {{ item.total_existencia }}
+                    </v-chip>
+                </div>
+            </template>
+            <template v-slot:item.precio="{ item }">
+                <div class="chip">
+                    <v-card-item class="pl-0 pr-0">
+                        <v-chip color="primary" class="text-caption text-sm-h7">
+                            Bs. {{ decimal(item.precio_bs) }}
+                        </v-chip>
+                    </v-card-item>
+                    <v-card-item class="pl-0 pr-0">
+                        <v-chip color="primary" class="text-caption text-sm-h7">
+                            $ {{ decimal(item.precio_dolar) }}
+                        </v-chip>
+                    </v-card-item>
+
                 </div>
             </template>
         </v-data-table>
@@ -62,9 +92,13 @@ function cancel() {
     data_delete.value = {}
 }
 
+function decimal(monto) {
+    return monto.toFixed(2)
+}
+
 watch(
     () => props.store.delete_success, (newVal) => {
-        if (newVal) {
+        if (newVal == false) {
             dialogOpen.value = false
             data_delete.value = {}
         }
@@ -72,3 +106,16 @@ watch(
 )
 
 </script>
+
+
+<style scoped>
+@media screen and (max-width:1024px) {
+    .chip {
+        width: 150px;
+    }
+
+    .actions {
+        width: 100px;
+    }
+}
+</style>

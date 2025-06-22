@@ -7,6 +7,8 @@ export const useProveedoresStore = defineStore('proveedores', () => {
         nom_prov: '',
         iden: null,
         iden_number: '',
+        vig_prov: true,
+        hab_prov: true
     })
     const backup = ref({})
     const loading = ref(false)
@@ -15,18 +17,15 @@ export const useProveedoresStore = defineStore('proveedores', () => {
     const headers = ref([
         { key: 'nom_prov', title: 'Nombre' },
         { key: 'iden_prov', title: 'RIF' },
-        { key: 'hab_prov', title: 'Estado' },
+        { key: 'vig_prov', title: 'Estado' },
         { key: 'actions', title: 'Acciones' },
     ])
-    const fields = ref([
-        { key: 'nom_prov', type: 'text', title: 'Nombre' },
-        { key: 'iden', type: 'select', subKey: 'iden_number', subType: 'text', title: 'RIF', subTitle: 'Identificación', constante: 'rif' },
-    ])
+    const fields = ref([])
     const items = ref([])
     const dialogOpen = ref(false)
     const section = 'Proveedores'
     const title_form = ref('')
-    
+
     const delete_success = ref(false)
 
     const alert = ref(false)
@@ -56,112 +55,65 @@ export const useProveedoresStore = defineStore('proveedores', () => {
     }
 
     async function add() {
-        // loading_button.value = true
-        // const val_tel = tel(data.value.tel, data.value.tel_num)
-        // const val_mail = mail(data.value.email, data.value.type_email)
-        // let msj = []
-        // if (!val_tel.result) {
-        //     msj.push(val_tel.msj)
-        // }
-        // if (!val_mail.result) {
-        //     msj.push(val_mail.msj)
-        // }
-        // if (msj.length > 0) {
-        //     alertaCrud('Error de validación', true, msj, 'warning')
-        //     loading_button.value = false
-        //     return;
-        // }
-        // try {
-        //     let obj = {
-        //         nom_cli: capitalize(data.value.nom_cli),
-        //         ape_cli: capitalize(data.value.ape_cli),
-        //         iden: String(data.value.iden) + String(data.value.iden_number),
-        //         tel_cli: val_tel.telefono,
-        //         email: val_mail.mail,
-        //     }
-        //     const validacion_vacio = empty(obj)
-        //     if (!validacion_vacio.result) {
-        //         msj.push(validacion_vacio.msj)
-        //     }
-        //     if (msj.length > 0) {
-        //         alertaCrud('Error de validación', true, msj, 'warning')
-        //         return;
-        //     }
-        //     const result = await apiCall('clientes/crear', 'POST', obj)
-        //     if (result.msj_error) {
-        //         alertaCrud('Error de al registrar', true, [result.msj_error], 'error')
-        //         loading_button.value = false
-        //         return;
-        //     }
-        //     if (result.msj) {
-        //         alertaCrud('Registrado con éxito', true, [result.msj], 'success')
-        //     }
-        //     loading_button.value = false
-        //     dialogOpen.value = false
-        //     await get()
-        // } catch (error) {
-        //     console.error(error)
-        // }
+        loading_button.value = true
+        try {
+            let obj = {
+                nom_prov: capitalize(data.value.nom_prov),
+                iden_prov: String(data.value.iden) + String(data.value.iden_number)
+            }
+            let msj = []
+            const validacion_vacio = empty(obj)
+            if (!validacion_vacio.result) {
+                msj.push(validacion_vacio.msj)
+            }
+            if (msj.length > 0) {
+                alertaCrud('Error de validación', true, msj, 'warning')
+                return;
+            }
+            const result = await apiCall('proveedor/crear', 'POST', obj)
+
+            if (result.msj_error) {
+                alertaCrud('Error de al registrar', true, [result.msj_error], 'error')
+                loading_button.value = false
+                return;
+            }
+            if (result.msj) {
+                alertaCrud('Registrado con éxito', true, [result.msj], 'success')
+            }
+            loading_button.value = false
+            dialogOpen.value = false
+            await get()
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     async function edit_item(item) {
+        fields.value = [
+            { key: 'nom_prov', type: 'text', title: 'Nombre' },
+            { key: 'iden', type: 'select', subKey: 'iden_number', subType: 'text', title: 'RIF', subTitle: 'Identificación', constante: 'rif' },
+            { key: 'vig_prov', type: 'check', title: 'Vigente' },
+        ]
         title_form.value = 'Modificar'
-        const tip = item.iden.split('-')[0] + '-'
-        const number = item.iden.split('-')[1]
-        let cod;
-        let tel;
-        let type_email;
-        let email;
-        if (item.tel_cli === 'Sin contacto') {
-            cod = null;
-            tel = ''
-        } else {
-            cod = item.tel_cli.split('-')[0]
-            tel = item.tel_cli.split('-')[1]
-        }
-        if (item.email === 'Sin correo') {
-            type_email = null;
-            email = ''
-        } else {
-            type_email = '@' + item.email.split('@')[1]
-            email = item.email.split('@')[0]
-        }
+        const partes = item.iden_prov.split('-')
+        const tip = partes[0] + "-"
+        const number = partes.slice(1).join('-')
         data.value = {
-            nom_cli: item.nom_cli,
-            ape_cli: item.ape_cli,
+            nom_prov: item.nom_prov,
             iden: tip,
             iden_number: number,
-            tel: cod,
-            tel_num: tel,
-            type_email: type_email,
-            email: email,
+            vig_prov: item.vig_prov
         }
         backup.value = { ...item }
         dialogOpen.value = true
     }
 
     async function modify() {
-        const val_tel = tel(data.value.tel, data.value.tel_num)
-        const val_mail = mail(data.value.email, data.value.type_email)
-        let msj = []
-        if (!val_tel.result) {
-            msj.push(val_tel.msj)
-        }
-        if (!val_mail.result) {
-            msj.push(val_mail.msj)
-        }
-        if (msj.length > 0) {
-            alertaCrud('Error de validación', true, msj, 'warning')
-            loading_button.value = false
-            return;
-        }
         let obj_modify = {
-            id_cli: backup.value.id_cli,
-            nom_cli: capitalize(data.value.nom_cli),
-            ape_cli: capitalize(data.value.ape_cli),
-            iden: String(data.value.iden) + String(data.value.iden_number),
-            tel_cli: val_tel.telefono,
-            email: val_mail.mail,
+            id_prov: backup.value.id_prov,
+            nom_prov: capitalize(data.value.nom_prov),
+            iden_prov: String(data.value.iden) + String(data.value.iden_number),
+            vig_prov: data.value.vig_prov
         }
         const obj_val = modify_data(obj_modify, backup.value)
         if (!obj_val.result) {
@@ -170,10 +122,11 @@ export const useProveedoresStore = defineStore('proveedores', () => {
             return
         }
         let obj = obj_val.data
-        obj.id_cli = backup.value.id_cli
+        obj.id_prov = backup.value.id_prov
 
+        console.log(obj)
         try {
-            const result = await apiCall('clientes/modificar', 'PUT', obj)
+            const result = await apiCall('proveedor/modificar', 'PUT', obj)
             if (result.msj_error) {
                 alertaCrud('Error de al modificar', true, [result.msj_error], 'error')
                 loading_button.value = false
@@ -207,7 +160,7 @@ export const useProveedoresStore = defineStore('proveedores', () => {
             }
             await get()
             loading_delete.value = false
-            delete_success.value = true
+            delete_success.value = false
         } catch (error) {
             console.error(error)
         }
@@ -215,17 +168,16 @@ export const useProveedoresStore = defineStore('proveedores', () => {
     }
 
     function form_add() {
+        fields.value = [
+            { key: 'nom_prov', type: 'text', title: 'Nombre' },
+            { key: 'iden', type: 'select', subKey: 'iden_number', subType: 'text', title: 'RIF', subTitle: 'Identificación', constante: 'rif' }
+        ]
         title_form.value = 'Agregar'
         dialogOpen.value = true
         data.value = {
-            nom_cli: '',
-            ape_cli: '',
+            nom_prov: '',
             iden: null,
             iden_number: '',
-            tel: null,
-            tel_num: '',
-            type_email: null,
-            email: '',
         }
     }
 

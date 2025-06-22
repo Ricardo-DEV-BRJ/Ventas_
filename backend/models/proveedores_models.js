@@ -6,21 +6,25 @@ const { vacios, incompletos } = require('../utils/validacion')
 class ProveedoresModels {
     todos() {
         return new Promise((resolve, reject) => {
-            const query = todos('proveedores', 'hab_prov', 'DESC')
-            connection.query(query, function (error, result, field) {
+            const query = 'SELECT * FROM proveedores WHERE hab_prov = ?'
+            connection.query(query, [true], function (error, result, field) {
                 if (error) {
                     return reject({ msj_error: 'Error del servidor', error: error })
                 }
-                if (result.length === 0) {
-                    return reject({ msj_error: 'Sin datos para mostrar' })
+                if (result.length > 0) {
+                    result.map((item) => {
+                        if (item.hab_prov == 1) {
+                            item.hab_prov = true
+                        } else {
+                            item.hab_prov = false
+                        }
+                        if (item.vig_prov == 1) {
+                            item.vig_prov = true
+                        } else {
+                            item.vig_prov = false
+                        }
+                    })
                 }
-                result.map((item)=>{
-                    if (item.hab_prov == 1) {
-                        item.hab_prov = true
-                    } else {
-                        item.hab_prov = false
-                    }
-                })
                 resolve(result)
             })
         })
@@ -53,8 +57,8 @@ class ProveedoresModels {
             const id_prov = uuidv4()
             const fec_prov = new Date()
             const hab_prov = true
-            const params = [id_prov, proveedor.nom_prov, proveedor.iden_prov, fec_prov, hab_prov]
-            const fields = ['id_prov', 'nom_prov', 'iden_prov', 'fec_prov', 'hab_prov']
+            const params = [id_prov, proveedor.nom_prov, proveedor.iden_prov, fec_prov, true, hab_prov]
+            const fields = ['id_prov', 'nom_prov', 'iden_prov', 'fec_prov', 'vig_prov', 'hab_prov']
             const query = crear('proveedores', fields)
             const all_data = incompletos(params, fields)
             if (!all_data) {
@@ -63,7 +67,13 @@ class ProveedoresModels {
             connection.query(query, params, function (error, result, field) {
                 if (error) {
                     if (error.sqlMessage.includes('Duplicate')) {
-                        return reject({ msj_error: 'Identificación registrada' })
+                        if (error.sqlMessage.includes('nom_prov')) {
+                            return reject({ msj_error: 'Nombre de proveedor ya registrada' })
+                        }
+                        if (error.sqlMessage.includes('iden_prov')) {
+                            return reject({ msj_error: 'Identificación ya registrada' })
+                        }
+
                     }
                     return reject({ msj_error: 'Error del servidor', error: error })
                 }
@@ -93,6 +103,10 @@ class ProveedoresModels {
             if (proveedor.iden_prov) {
                 update.push('iden_prov')
                 params.push(proveedor.iden_prov)
+            }
+            if (proveedor.vig_prov === true || proveedor.vig_prov === false) {
+                update.push('vig_prov')
+                params.push(proveedor.vig_prov)
             }
             if (update.length === 0) {
                 return reject({ msj_error: 'Sin datos para modificar' })

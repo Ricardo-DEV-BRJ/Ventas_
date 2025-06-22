@@ -10,10 +10,7 @@ class ClientesModels {
             try {
                 connection.query(query, [1], function (error, result) {
                     if (error) {
-                        return reject({ msj: 'Error al consultar' })
-                    }
-                    if (result.length === 0) {
-                        return resolve({ msj: 'Sin datos para mostrar' })
+                        return reject({ msj_error: 'Error al consultar' })
                     }
                     resolve(result)
                 })
