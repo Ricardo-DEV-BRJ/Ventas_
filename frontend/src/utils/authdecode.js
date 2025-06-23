@@ -4,9 +4,9 @@
  * @return {Object} payload en JSON
  */
 function getAuthPayload() {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
   const payload = token ? token.split('.')[1] : null;
-  return payload ? JSON.parse(atob(payload)) : {};
+  return payload ? JSON.parse(decodeURIComponent(escape(atob(payload)))) : {};
 }
 
 /**

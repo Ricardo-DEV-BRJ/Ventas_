@@ -1,9 +1,10 @@
 const constantes = {
-    indentificacion: [null, 'V-', 'E-', 'J-', 'Pasaporte'],
-    codigos: [null, '0424', '0414', '0426', '0416', '0412', '0271'],
-    correos: [null, '@gmail.com', '@outlook.com', '@hotmail.com'],
-    rif: [null, 'J-', 'G-', 'V-', 'E-'],
-    vig: [null, { value: true, title: 'Si' }, { value: false, title: 'No' }]
+    indentificacion: [undefined, 'V-', 'E-', 'J-', 'Pasaporte'],
+    codigos: [undefined, '0424', '0414', '0426', '0416', '0412', '0271'],
+    correos: [undefined, '@gmail.com', '@outlook.com', '@hotmail.com'],
+    rif: [undefined, 'J-', 'G-', 'V-', 'E-'],
+    tip_fac: [undefined, 'Fiscal', 'Nota de entrega'],
+    vig: [undefined, { value: true, title: 'Si' }, { value: false, title: 'No' }]
 }
 
 

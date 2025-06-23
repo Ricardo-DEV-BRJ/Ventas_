@@ -15,7 +15,8 @@ class UsuariosModels {
             const hash = bcrypt.hashSync(usuario.clave, saltRounds)
             const fec_usu = new Date()
             const hab_usu = true
-            const params = [id_usu, usuario.iden, usuario.nom_usu, usuario.ape_usu, usuario.usuario, hash, usuario.id_rol, hab_usu, fec_usu]
+            const user = usuario.usuario.toLowerCase()
+            const params = [id_usu, usuario.iden, usuario.nom_usu, usuario.ape_usu, user, hash, usuario.id_rol, hab_usu, fec_usu]
             const query = 'INSERT INTO usuarios (id_usu, iden, nom_usu, ape_usu, usuario, clave, id_rol, hab_usu, fec_usu) VALUES (?,?,?,?,?,?,?,?,?)'
             connection.query(query, params, function (error, result, field) {
                 if (error) {
@@ -36,7 +37,8 @@ class UsuariosModels {
             if (!usuario.usuario || !usuario.clave) {
                 reject({ msj_error: 'Datos incompletos' })
             }
-            const params = [usuario.usuario]
+            const user = usuario.usuario.toLowerCase()
+            const params = [user]
             const query = 'SELECT u.id_usu, u.nom_usu, u.ape_usu, u.usuario, r.nom_rol, u.clave, u.hab_usu FROM usuarios u INNER JOIN roles r ON u.id_rol = r.id_rol WHERE usuario = ?'
             try {
                 const data = await new Promise((resolve, reject) => {
@@ -71,8 +73,8 @@ class UsuariosModels {
 
     todos() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM usuarios ORDER BY hab_usu DESC'
-            connection.query(query, function (error, result, field) {
+            const query = 'SELECT u.id_usu, u.nom_usu, u.ape_usu, u.iden, u.usuario, r.id_rol, r.nom_rol, u.clave, u.hab_usu FROM usuarios u INNER JOIN roles r ON u.id_rol = r.id_rol WHERE hab_usu = ?'
+            connection.query(query, [1], function (error, result, field) {
                 if (error) {
                     return reject({ msj_error: 'Error al consultar', error: error })
                 }

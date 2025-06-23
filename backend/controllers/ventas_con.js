@@ -1,25 +1,36 @@
 const VentasModels = require('../models/ventas_models')
 
 class VentasController {
+    todos() {
+        return new Promise((resolve, reject) => {
+            VentasModels.todos()
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
+        })
+    }
+
     detalle(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.detalle(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
     }
 
     crear(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.crear(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
 
     }
@@ -27,11 +38,11 @@ class VentasController {
     pago(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.pago(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
 
     }
@@ -39,22 +50,22 @@ class VentasController {
     devolucion(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.devolucion(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
 
     }
     devolucion_uno(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.devolucion_uno(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
 
     }
@@ -62,11 +73,11 @@ class VentasController {
     eliminar(venta) {
         return new Promise((resolve, reject) => {
             VentasModels.eliminar(venta)
-            .then((result) => {
-                resolve(result)
-            }).catch((err) => {
-                reject(err)
-            });
+                .then((result) => {
+                    resolve(result)
+                }).catch((err) => {
+                    reject(err)
+                });
         })
     }
 }

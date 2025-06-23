@@ -14,7 +14,7 @@
                             <v-container class="pa-0 pa-sm-4 pb-2">
                                 <div v-for="(field, index) in store.fields">
 
-                                    <v-text-field v-if="field.type === 'text' && !field.row"
+                                    <v-text-field v-if="field.type === 'text' || field.type === 'password' && !field.row"
                                         v-model="store.data[field.key]" :label="field.title" variant="underlined"
                                         :rules="[rules.required, rules.empty]" :key="index" :type="field.type"
                                         autocomplete="off">

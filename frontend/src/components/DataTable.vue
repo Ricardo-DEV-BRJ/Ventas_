@@ -24,7 +24,8 @@
             </template>
             <template v-slot:item.info="{ item }">
                 <div>
-                    <v-btn icon="mdi-ballot" color="info" title="Ver detalles" @click="store.get_detalle(item), store.prod = item.nom_prod"></v-btn>
+                    <v-btn icon="mdi-ballot" color="info" title="Ver detalles"
+                        @click="store.get_detalle(item), store.prod = item.nom_prod"></v-btn>
                 </div>
             </template>
             <template v-slot:item.total_existencia="{ item }">
@@ -50,6 +51,27 @@
                         </v-chip>
                     </v-card-item>
 
+                </div>
+            </template>
+            <template v-slot:item.monto="{ item }">
+                <div>
+                    <v-card-item class="pl-0 pr-0">
+                        <v-chip color="primary">
+                            Bs. {{ decimal(item.monto_bs) }}
+                        </v-chip>
+                    </v-card-item>
+                    <v-card-item class="pl-0 pr-0">
+                        <v-chip color="primary">
+                            $ {{ decimal(item.monto_dolar) }}
+                        </v-chip>
+                    </v-card-item>
+
+                </div>
+            </template>
+            <template v-slot:item.detalle="{ item }">
+                <div>
+                    <v-btn color="primary" title="Detalle" icon="mdi-shopping-search-outline" @click="store.get_detalle(item)"
+                        variant="text"></v-btn>
                 </div>
             </template>
         </v-data-table>

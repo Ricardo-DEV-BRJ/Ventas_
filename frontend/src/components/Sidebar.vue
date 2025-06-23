@@ -78,12 +78,6 @@ const items = [
         ruta: 'categorias_productos'
     },
     {
-        title: 'Productos',
-        value: 'Productos',
-        icon: 'mdi-food-apple',
-        ruta: 'productos'
-    },
-    {
         title: 'Usuarios',
         value: 'Usuarios',
         icon: 'mdi-account-group',
