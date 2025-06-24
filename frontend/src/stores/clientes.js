@@ -21,7 +21,7 @@ export const useClientesStore = defineStore('clientes', () => {
         { key: 'nom_cli', title: 'Nombre' },
         { key: 'ape_cli', title: 'Apellido' },
         { key: 'iden', title: 'Identificación' },
-        { key: 'tel_cli', title: 'Telefono' },
+        { key: 'tel_cli', title: 'Teléfono' },
         { key: 'email', title: 'Correo' },
         { key: 'actions', title: 'Acciones' },
 

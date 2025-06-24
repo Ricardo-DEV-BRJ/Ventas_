@@ -10,6 +10,7 @@ export const useVentasStore = defineStore('ventas', () => {
     const headers = ref([
         { key: 'fec_ven', title: 'Fecha' },
         { key: 'tip_factura', title: 'Tipo de factura' },
+        { key: 'num_fac', title: 'Número de factura' },
         { key: 'monto', title: 'Monto' },
         { key: 'detalle', title: 'Detalle' },
         { key: 'aten_por', title: 'Atendido por' },

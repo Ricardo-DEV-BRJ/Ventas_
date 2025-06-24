@@ -6,7 +6,7 @@ const { crear, modificar, eliminar } = require('../utils/consultas');
 class VentasModels {
     todos(){
         return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM ventas ORDER BY fec_ven DESC'
+            const query = 'SELECT v.id_ven, v.tip_factura, v.monto_bs, v.monto_dolar, v.fec_ven, v.aten_por, d.num_fac FROM ventas v INNER JOIN detalle_venta d ON v.id_ven = d.id_ven WHERE v.hab_ven = 1 ORDER BY v.fec_ven DESC'
             connection.query(query, function(error,result){
                 if (error) {
                     return reject({ msj_error: 'Error al consultar', error: error })

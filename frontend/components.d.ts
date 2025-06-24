@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     Aviso: typeof import('./src/components/Aviso.vue')['default']
+    Back_button: typeof import('./src/components/Back_button.vue')['default']
     Bienvenido: typeof import('./src/components/Bienvenido.vue')['default']
     Button_theme: typeof import('./src/components/button_theme.vue')['default']
     DataTable: typeof import('./src/components/DataTable.vue')['default']
