@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-card color="fondo">
         <v-card-item>
             <v-row justify="center" class="pa-4">
                 <v-col cols="12" md="11">
@@ -119,10 +119,10 @@
                                                         <template v-slot:append-inner>
                                                             <div class="d-flex align-center ga-2">
                                                                 <v-chip color="primary">
-                                                                    Bs. {{ venta.producto.prec_uni_bs }}
+                                                                    Bs. {{ decimal(venta.producto.prec_uni_bs) }}
                                                                 </v-chip>
                                                                 <v-chip color="primary">
-                                                                    $ {{ venta.producto.prec_uni_dolar }}
+                                                                    $ {{ decimal(venta.producto.prec_uni_dolar) }}
                                                                 </v-chip>
                                                             </div>
                                                         </template>
@@ -138,7 +138,11 @@
                                     </v-col>
                                 </v-row>
                                 <v-col cols="12" sm="6" md="4" lg="2" class="pl-0 pr-0">
-                                    <v-text-field v-model="tasa" label="Tasa" variant="underlined" type="number" min="1">
+                                    <v-text-field v-model="venta.tasa" label="Tasa" variant="underlined" type="number"
+                                        min="1">
+                                        <template v-slot:prepend-inner>
+                                            Bs.
+                                        </template>
                                     </v-text-field>
                                 </v-col>
                                 <v-card-actions class="d-flex justify-end">
@@ -153,7 +157,7 @@
 
                             <br>
                             <v-card class="pa-4">
-                                <v-data-table :headers="headers" :items="venta.lista" hide-default-footer>
+                                <v-data-table-virtual :headers="headers" height="400" :items="venta.lista">
                                     <template v-slot:item.precio="{ item }">
                                         <div class="chip">
                                             <v-card-item class="pl-0 pr-0">
@@ -192,7 +196,7 @@
                                             @click="edit_item(item)">
                                         </v-btn>
                                     </template>
-                                </v-data-table>
+                                </v-data-table-virtual>
                                 <v-divider></v-divider>
                                 <v-col cols="12">
                                     <v-row>
@@ -224,13 +228,16 @@
                                 <v-col cols="12">
                                     <v-row>
                                         <v-col cols="6">
-                                            <v-card-item title="Total" class="color">
+                                            <v-card-item title="Totales" class="color">
                                             </v-card-item>
                                         </v-col>
                                         <v-col cols="6" class="d-flex justify-end">
                                             <v-card-item class="text-green">
                                                 <v-card-title>
                                                     Bs.{{ total(venta.lista) }}
+                                                </v-card-title>
+                                                <v-card-title>
+                                                    $ {{ (total(venta.lista) / venta.tasa).toFixed(2) }}
                                                 </v-card-title>
                                             </v-card-item>
                                         </v-col>
@@ -256,9 +263,20 @@
                         </v-col>
                     </v-row>
                 </v-col>
+                <v-col cols="12" md="11">
+                    <v-card class="pa-4">
+                        <v-card-title class="text-subtitle-1 text-md-h6 text-lg-h5 font-weight-bold text-pre-wrap">
+                            Método de pago
+                        </v-card-title>
+                        <v-col cols="4">
+                            <v-select label="Métodos" variant="underlined" :items="constantes.metodos">
+                            </v-select>
+                        </v-col>
+                    </v-card>
+                </v-col>
             </v-row>
         </v-card-item>
-    </div>
+    </v-card>
 </template>
 
 <script setup>

@@ -2,10 +2,12 @@ import { defineStore } from "pinia";
 import { apiCall } from "../utils/apiCall";
 export const useAgregarVentaStore = defineStore('agregar_venta', () => {
 
+    const tasa = ref(1)
     const data = ref({})
     const producto = ref({})
     const lista = ref([])
     let index = ref(0)
+
 
     async function clientes_exi(item) {
         const partes = item.iden.split('-')
@@ -104,5 +106,5 @@ export const useAgregarVentaStore = defineStore('agregar_venta', () => {
         clear_prod();
     }
 
-    return { data, producto, lista, clientes_exi, clear, clear_prod, producto_exi, montos, montos_edit };
+    return { data, producto, lista, tasa, clientes_exi, clear, clear_prod, producto_exi, montos, montos_edit };
 })
