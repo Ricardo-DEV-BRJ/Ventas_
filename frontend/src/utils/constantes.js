@@ -5,7 +5,8 @@ const constantes = {
     rif: [undefined, 'J-', 'G-', 'V-', 'E-'],
     tip_fac: [undefined, 'Fiscal', 'Nota de entrega'],
     vig: [undefined, { value: true, title: 'Si' }, { value: false, title: 'No' }],
-    metodos:[undefined, 'Tarjeta de débito', 'Efectivo', 'Transferencia Bancaria', 'Zelle' ]
+    metodos:[undefined, 'Tarjeta de débito', 'Efectivo', 'Transferencia Bancaria', 'Zelle' ],
+    moneda: [undefined,'Bolívares', 'Dólares']
 }
 
 

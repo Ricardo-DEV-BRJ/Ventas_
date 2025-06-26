@@ -44,6 +44,7 @@ export const useClientesStore = defineStore('clientes', () => {
     const alertMsj = ref([])
     const alertTitle = ref('')
     const alertType = ref('')
+    
     function alertaCrud(title, shoAlert, msj, type) {
         alert.value = shoAlert
         alertMsj.value = msj
@@ -110,6 +111,56 @@ export const useClientesStore = defineStore('clientes', () => {
             loading_button.value = false
             dialogOpen.value = false
             await get()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function add_venta(cliente) {
+        loading_button.value = true
+        const val_tel = tel(cliente.tel, cliente.tel_num)
+        const val_mail = mail(cliente.email, cliente.type_email)
+        let msj = []
+        if (!val_tel.result) {
+            msj.push(val_tel.msj)
+        }
+        if (!val_mail.result) {
+            msj.push(val_mail.msj)
+        }
+        if (msj.length > 0) {
+            alertaCrud('Error de validación', true, msj, 'warning')
+            loading_button.value = false
+            return;
+        }
+        try {
+            let obj = {
+                nom_cli: capitalize(cliente.nom_cli),
+                ape_cli: capitalize(cliente.ape_cli),
+                iden: String(cliente.iden) + String(cliente.iden_number),
+                tel_cli: val_tel.telefono,
+                email: val_mail.mail,
+            }
+            const validacion_vacio = empty(obj)
+            if (!validacion_vacio.result) {
+                msj.push(validacion_vacio.msj)
+            }
+            if (msj.length > 0) {
+                alertaCrud('Error de validación', true, msj, 'warning')
+                return;
+            }
+            const result = await apiCall('clientes/crear', 'POST', obj)
+            if (result.msj_error) {
+                alertaCrud('Error de al registrar', true, [result.msj_error], 'error')
+                loading_button.value = false
+                return;
+            }
+            if (result.msj) {
+                alertaCrud('Registrado con éxito', true, [result.msj], 'success')
+            }
+            loading_button.value = false
+            await get()
+            const cliente_nuevo = items.value.find(Element => Element.iden === obj.iden)
+            return cliente_nuevo;
         } catch (error) {
             console.error(error)
         }
@@ -247,5 +298,5 @@ export const useClientesStore = defineStore('clientes', () => {
 
 
 
-    return { items, headers, loading, fields, data, dialogOpen, section, alert, alertMsj, alertTitle, alertType, loading_button, title_form, loading_delete, delete_success, get, add, alertaCrud, form_add, delete_item, edit_item, modify };
+    return { items, headers, loading, fields, data, dialogOpen, section, alert, alertMsj, alertTitle, alertType, loading_button, title_form, loading_delete, delete_success, get, add, alertaCrud, form_add, delete_item, edit_item, modify, add_venta };
 })

@@ -1,5 +1,5 @@
 <template>
-    <v-col cols="12" sm="8" md="5" lg="3" class="position-absolute flotar">
+    <v-col cols="12" sm="8" md="5" lg="3" class="position-fixed flotar">
         <v-expand-transition>
             <v-card v-show="store.alert">
                 <v-alert closable :color="store.alertType" :title="store.alertTitle" >

@@ -147,7 +147,7 @@ class VentasModels {
 
     pago(venta) {
         return new Promise((resolve, reject) => {
-            if (!venta.monto_bs || !venta.monto_dolar || venta.total) {
+            if (!venta.monto_bs || !venta.monto_dolar) {
                 return reject({ msj_error: 'Datos incompletos' })
             }
             if (venta.met_ref === undefined || venta.met_ref === null) {
@@ -177,7 +177,7 @@ class VentasModels {
                     if (error) {
                         return reject({ msj_error: 'Error al registrar', error: error })
                     }
-                    resolve({ msj: 'Pago registrado con exito' })
+                    resolve({ msj: 'Pago registrado con exito', id_pago:id_pag })
                 })
             } catch (error) {
                 reject(error)
